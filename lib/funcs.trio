@@ -1,14 +1,247 @@
 
 -------------------------------------------------------------------------------
-name	: testAxonator
+name : testAxont
 func
 overridable
-doc		:
-src		:
+src	:
   () => do
   [
-    testAxonateFuncHappyCase,
-    testFuncArgs
-  ].runTests
+    testAxontVerify,
+    testAxontVerifyTrue,
+    testAxontVerifyFalse,
+    testAxontVerifyNull,
+    testAxontVerifyNotNull,
+    testAxontVerifyEq,
+    testAxontVerifyNotEq,
+    testAxontVerifyErr,
+    testAxontVerifyErrMsg,
+    testAxontFail,
+    
+    testAxontRunTests,
+  ].runTests()
   end
 
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerify
+func
+overridable
+src	:
+  () => do
+  // happy case
+  verify(true)
+  
+  // unhappy case
+  verifyErrMsg("Test failed") () =>
+    verify(false)
+    
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerifyTrue
+func
+overridable
+src	:
+  () => do
+  // happy case
+  verifyTrue(true)
+  
+  // unhappy case
+  verifyErrMsg("Test failed") () =>
+    verifyTrue(false)
+    
+  "okay"
+  end
+
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerifyFalse
+func
+overridable
+src	:
+  () => do
+  // happy case
+  verifyFalse(false)
+  
+  // unhappy case
+  verifyErrMsg("Test failed") () =>
+    verifyFalse(true)
+    
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerifyNull
+func
+overridable
+src	:
+  () => do
+  // happy case
+  verifyNull(null)
+  
+  // unhappy case
+  verifyErrMsg("Test failed: 69 [haystack::Number] is not null") () =>
+    verifyNull(69)
+    
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerifyNotNull
+func
+overridable
+src	:
+  () => do
+  // happy case
+  verifyNotNull(69)
+  
+  // unhappy case
+  verifyErrMsg("Test failed: is null") () =>
+    verifyNotNull(null)
+    
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerifyEq
+func
+overridable
+src	:
+  () => do
+  // happy case
+  verifyEq(6, 6)
+  
+  // unhappy case
+  verifyErrMsg("Test failed: 6 [haystack::Number] != 9 [haystack::Number]") () =>
+    verifyEq(6, 9)
+    
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerifyNotEq
+func
+overridable
+src	:
+  () => do
+  // happy case
+  verifyNotEq(6, 9)
+  
+  // unhappy case
+  verifyErrMsg("Test failed: 6 [haystack::Number] == 6 [haystack::Number]") () =>
+    verifyNotEq(6, 6)
+    
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerifyErr
+func
+overridable
+src	:
+  () => do
+  // happy case
+  verifyErr =>
+    parseInt("@#!")
+  
+  // unhappy case
+  verifyErrMsg("Test failed: Err not thrown") () =>
+    verifyErr =>
+      "Hello Mum!"
+    
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontVerifyErrMsg
+func
+overridable
+src	:
+  () => do
+  // happy cases
+  verifyErrMsg("Invalid Int: '@#!'") () =>
+    parseInt("@#!")
+  
+  verifyErrMsg("poo") () =>
+    throw { dis: "poo" }
+  
+  // unhappy cases
+  verifyErrMsg("Test failed: Err not thrown") () =>
+    verifyErrMsg =>
+      "Hello Mum!"
+
+  verifyErrMsg("Test failed: \"foo\" [sys::Str] != \"Invalid Int: 'poo'\" [sys::Str]") () =>
+    verifyErrMsg("foo") () =>
+      parseInt("poo")
+
+  verifyErrMsg("Test failed: \"foo\" [sys::Str] != \"poo\" [sys::Str]") () =>
+    verifyErrMsg("foo") () =>
+      throw { dis: "poo" }
+
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontFail
+func
+overridable
+src	:
+ () => do
+ // happy cases
+  verifyErrMsg("Test failed: poo") () =>
+    fail("poo")
+
+  verifyErrMsg("Test failed: 69") () =>
+    fail(69)
+
+  verifyErrMsg("Test failed") () =>
+    fail(null)
+
+  verifyErrMsg("Test failed") () =>
+    fail()
+
+  // there are no unhappy cases with fail!
+  // ... or ...
+  // to fail is to be happy! :D
+
+  "okay"
+  end
+
+
+
+-------------------------------------------------------------------------------
+name : testAxontRunTests
+func
+overridable
+src	:
+  () => do
+  // test null return msg
+  fn1 : () => null
+  runTests(fn1)
+
+  // test "func not found" does not throw an err
+  res : runTests("testNotFound")
+  verifyEq(res.first["msg"], "Unknown func: testNotFound")
+  
+  "okay"
+  end

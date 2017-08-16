@@ -2,12 +2,14 @@ using axon::Axon
 using axon::AxonContext
 using axon::Fn
 using axon::EvalErr
+using axon::ThrowErr
 using haystack::Etc
 using haystack::Dict
 using haystack::Grid
 using haystack::Number
 using skyarcd::Context
 
+** Axon functions for Axont.
 const class AxontLib {
 
 	** Verify that cond is true, otherwise throw a test failure exception.
@@ -48,8 +50,6 @@ const class AxontLib {
 	}
 	
 	** Verify that a == b, otherwise throw a test failure exception.
-	** If both a and b are nonnull, then this method also ensures that a.hash == b.hash, because 
-	** any two objects which return true for equals() must also return the same hash code.
 	** If msg is non-null, include it in failure exception.
 	@Axon
 	static Void verifyEq(Obj? a, Obj? b, Str? msg := null) {
@@ -66,7 +66,8 @@ const class AxontLib {
 	** Verify that the function throws an Err.
 	**
 	** Example:
-	**   verifyErr => parseInt("@#!")
+	**   verifyErr =>
+	**     parseInt("@#!")
 	**
 	@Axon
 	static Void verifyErr(Fn fn) {
@@ -81,53 +82,66 @@ const class AxontLib {
 	** The contained dis msg must be the same as errMsg.
 	**
 	** Example:
-	**   verifyErrMsg("Invalid Int: '@#!'") => parseInt("@#!")
+	**   verifyErrMsg("Invalid Int: '@#!'") () =>
+	**     parseInt("@#!")
+	** 
+	**   verifyErrMsg("poo") () =>
+	**     throw { dis: "poo" }
 	@Axon
 	static Void verifyErrMsg(Str errMsg, Fn fn) {
 		axonCtx := AxonContext.curAxon(true)
 		try {
 			fn.call(axonCtx, Obj#.emptyList)
 			MyTest().fail("Err not thrown")
-		} catch (Err err)
-			verifyEq(errMsg, err.msg)
+		} catch (Err err) {
+			if (err is EvalErr && err.cause != null)
+				err = err.cause
+			msg := err.msg
+			if (err is ThrowErr)
+				msg = ((ThrowErr) err).tags.dis ?: "null"
+			verifyEq(errMsg, msg)
+		}
 	}
 	
 	** Throw a test failure exception.
 	** If msg is non-null, include it in the failure exception.
 	@Axon
-	static Void fail(Str? msg := null) {
-		MyTest().fail(msg)
+	static Void fail(Obj? msg := null) {
+		MyTest().fail(msg?.toStr)
 	}
 
 	** Runs the given list of test functions and returns a Grid of results.
+	** 
+	** 'tests' may be a name of a top level function, the function itself, or a list of said types.
 	@Axon
 	static Grid runTests(Obj tests) {
 		if (tests isnot Str && tests isnot Fn && tests isnot List)
 			throw ArgErr("tests must either be a Str, Fn, or a List of said types - ${tests.typeof}")
-		if (tests is Str || tests is Fn)
+		if (tests isnot List)
 			tests = [tests]
 		
-		axonCtx := AxonContext.curAxon(true)
-		testList := (Fn[]) ((Obj[]) tests).map |test, i| {
-			if (test is Str)
-				return axonCtx.findTop(test, true)
-			if (test is Fn)
-				return test
-			throw ArgErr("tests[${i}] must either be a Str or Fn")
+		((Obj?[]) tests).each |test, i| {
+			if (test isnot Str && test isnot Fn)
+				throw ArgErr("tests[${i}] must either be a Str or Fn")
 		}
-		
-		results := testList.map |testFn| {
-			start := Duration.now
+
+		axonCtx := AxonContext.curAxon(true)
+		results := ((Obj?[]) tests).map |test, i| {
+			start  := Duration.now
+			fnName := (test as Str) ?: ((Fn) test).name 
 			result := Str:Obj?[:] { ordered = true }
 				.add("result"	, "")
-				.add("name"		, testFn.name)
+				.add("name"		, fnName)
 				.add("dur"		, null)
 				.add("msg"		, "okay")
 				.add("trace"	, null)
 			
 			try {
-				msg := testFn.call(axonCtx, Obj#.emptyList)
-				result["msg"] = msg.toStr
+				testFn	:= (test as Fn) ?: axonCtx.findTop(test, false)
+				if (testFn == null)
+					throw Err("Unknown func: ${test}")
+				msg		:= testFn.call(axonCtx, Obj#.emptyList)
+				result["msg"] = msg?.toStr
 				
 			} catch (Err err) {
 				if (err is EvalErr && err.cause != null)
@@ -148,7 +162,7 @@ const class AxontLib {
 	** Use to quickly run all tests in a project.
 	** 
 	** Example:
-	**   tests.runTests()
+	**   tests().runTests()
 	@Axon
 	static Fn[] tests() {
 		Context.cur(true).funcs { it.name.startsWith("test") && it.name.getSafe(4).isUpper }.map { it.expr }

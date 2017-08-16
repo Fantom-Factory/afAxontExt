@@ -18,6 +18,7 @@ class Build : BuildPod {
             // ---- SkySpark -----------------------
             "axon         3.0.12  - 3.0",
             "haystack     3.0.12  - 3.0",
+            "skyarc       3.0.12  - 3.0",
             "skyarcd      3.0.12  - 3.0",
         ]
 
