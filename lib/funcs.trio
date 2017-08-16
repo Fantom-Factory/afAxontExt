@@ -1,0 +1,14 @@
+
+-------------------------------------------------------------------------------
+name	: testAxonator
+func
+overridable
+doc		:
+src		:
+  () => do
+  [
+    testAxonateFuncHappyCase,
+    testFuncArgs
+  ].runTests
+  end
+

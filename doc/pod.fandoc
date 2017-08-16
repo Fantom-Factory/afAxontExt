@@ -1,0 +1,46 @@
+LEAD: Axont Ext is an extension for **SkySpark v3.0.12+** that provides
+
+
+
+Licensing
+*********
+Axon Ext is
+
+
+Overview
+********
+Axont methods may be categorised in to the following:
+
+Verify Functions
+================
+Blah blah
+
+ - [verify(cond, msg: null)]`#verify`
+
+It takes a 'Dict' of (mostly optional) request parameters and returns a 'Dict' of response parameters, and is capable of calling most REST APIs.
+
+
+
+
+Axon Functions
+**************
+Axon function reference documentation.
+
+verify(cond, msg: null) [#verify]
+======
+FANDOC: afAxontExt::AxontLib.verify
+
+
+
+Special Mentions
+****************
+Special thanks go to XXX for sponsoring, supporting, and beta testing Axont Ext.
+
+
+
+Release Notes
+*************
+
+**v0.0.2**
+ - New: Preview release used for the initial testing of [Axonator]`https://stackhub.org/package/afAxonator` - *the Axon source code encryptor and obfuscator*.
+
