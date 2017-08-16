@@ -9,6 +9,7 @@ class Build : BuildPod {
 
         meta = [
             "pod.dis"       : "Axont",
+			"pod.uri"		: "https://stackhub.org/package/afAxontExt",
             "repo.public"   : "true"
         ]
 
@@ -27,11 +28,12 @@ class Build : BuildPod {
 
         docApi = true
         docSrc = false
-        meta["afBuild.docApi"]  = "true"
+		meta["afBuild.docApi"]  = "true"
         meta["afBuild.docSrc"]  = "true"
 
-        meta["afBuild.testPods"]    = ""
-        meta["afBuild.testDirs"]    = "lib/"
+        meta["afBuild.testPods"]    	= ""
+        meta["afBuild.testDirs"]    	= "lib/"
+        meta["afBuild.plainReadmeMd"]	= "true"
 
 		index = [
 			"skyarc.ext": "afAxontExt::AxontExt",
