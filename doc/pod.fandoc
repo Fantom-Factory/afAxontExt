@@ -1,40 +1,104 @@
-LEAD: Axont Ext is an extension for **SkySpark v3.0.12+** that provides
+LEAD: An extension for SkySpark v3.0.12+ that provides a test runner and assertion functions testing Axon code.
+
+Quick Start
+***********
+First create some test functions in Axon. Test functions are typically prefixed with 'test', take no arguments, and optionally return 'okay' to signify just that.
+
+pre>
+testPassExample : () => do
+  expected : "foo bar"
+  actual   : "foo bar" // this bit should do some work!
+
+  // assert the result
+  verifyEq(expected, actual)
+
+  "okay"
+end
+
+testFailExample : () => do
+  expected : "foo bar"
+  actual   : "poo"
+
+  // assert the result
+  verifyEq(expected, actual)
+
+  "okay"
+end
+<pre
+
+Then pass them to the test runner to have them executed.
+
+pre>
+// run tests
+[
+  testPassExample,
+  testFailExample
+].runTests()
+<pre
+
+Results are returned in a handy grid:
+
+![Axont Result Grid]`testResults.png`
+
+
+
+Runner Functions
+****************
+
+runTests(tests) [#runTests]
+=================
+FANDOC: afAxontExt::AxontLib.runTests
+
+tests() [#tests]
+====
+FANDOC: afAxontExt::AxontLib.tests
+
+
+
+Assertion Functions
+*******************
+
+verify(cond, msg: null) [#verify]
+====
+FANDOC: afAxontExt::AxontLib.verify
+
+verifyTrue(cond, msg: null) [#verifyTrue]
+====
+FANDOC: afAxontExt::AxontLib.verifyTrue
+
+verifyFalse(cond, msg: null) [#verifyFalse]
+====
+FANDOC: afAxontExt::AxontLib.verifyFalse
+
+verifyNull(a, msg: null) [#verifyNull]
+====
+FANDOC: afAxontExt::AxontLib.verifyNull
+
+verifyNotNull(a, msg: null) [#verifyNotNull]
+====
+FANDOC: afAxontExt::AxontLib.verifyNotNull
+
+verifyEq(a, b, msg: null) [#verifyEq]
+====
+FANDOC: afAxontExt::AxontLib.verifyEq
+
+verifyNotEq(a, b, msg: null) [#verifyNotEq]
+====
+FANDOC: afAxontExt::AxontLib.verifyNotEq
+
+verifyErr(fn) [#verifyErr]
+====
+FANDOC: afAxontExt::AxontLib.verifyErr
+
+verifyErrMsg(msg, fn) [#verifyErrMsg]
+====
+FANDOC: afAxontExt::AxontLib.verifyErrMsg
 
 
 
 Licensing
 *********
-Axon Ext is
-
-
-Overview
-********
-Axont methods may be categorised in to the following:
-
-Verify Functions
-================
-Blah blah
-
- - [verify(cond, msg: null)]`#verify`
-
-It takes a 'Dict' of (mostly optional) request parameters and returns a 'Dict' of response parameters, and is capable of calling most REST APIs.
-
-
-
-
-Axon Functions
-**************
-Axon function reference documentation.
-
-verify(cond, msg: null) [#verify]
-======
-FANDOC: afAxontExt::AxontLib.verify
-
-
-
-Special Mentions
-****************
-Special thanks go to XXX for sponsoring, supporting, and beta testing Axont Ext.
+Axont is an open source project licensed under the [ISC Licence]`https://en.wikipedia.org/wiki/ISC_license` - ISC is similar to the MIT licence, only shorter!
 
 
 
@@ -42,5 +106,5 @@ Release Notes
 *************
 
 **v0.0.2**
- - New: Preview release used for the initial testing of [Axonator]`https://stackhub.org/package/afAxonator` - *the Axon source code encryptor and obfuscator*.
+ - New: Preview release, created to test [Axonator]`https://stackhub.org/package/afAxonator` - *the Axon source code encryptor and obfuscator*.
 

@@ -4,7 +4,7 @@ class Build : BuildPod {
 
     new make() {
         podName = "afAxontExt"
-        summary = "Axon Test Runner"
+        summary = "Test runner and assertion functions for Axon"
         version = Version("0.0.1")
 
         meta = [
@@ -23,7 +23,7 @@ class Build : BuildPod {
         ]
 
         srcDirs = [`fan/`]
-        resDirs = [`lib/`]
+        resDirs = [`doc/`, `lib/`]
 
         docApi = true
         docSrc = false

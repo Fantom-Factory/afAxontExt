@@ -13,51 +13,58 @@ using skyarcd::Context
 const class AxontLib {
 
 	** Verify that cond is true, otherwise throw a test failure exception.
-	** If msg is non-null, include it in a failure exception.
-	** Identical to `verifyTrue`.
+	** 
+	** If 'msg' is non-null, include it in a failure exception.
+	** Identical to 'verifyTrue()'.
 	@Axon
 	static Void verify(Bool cond, Str? msg := null) {
 		MyTest().verify(cond, msg)
 	}
 	
-	** Verify that cond is true, otherwise throw a test failure exception.
-	** If msg is non-null, include it in a failure exception.
-	** Identical to `verify`.
+	** Verify that 'cond' is 'true', otherwise throw a test failure exception.
+	** 
+	** If 'msg' is non-null, include it in a failure exception.
+	** Identical to 'verify()'.
 	@Axon
 	static Void verifyTrue(Bool cond, Str? msg := null) {
 		MyTest().verifyTrue(cond, msg)
 	}
 	
-	** Verify that cond is false, otherwise throw a test failure exception.
-	** If msg is non-null, include it in a failure exception.
+	** Verify that 'cond' is 'false', otherwise throw a test failure exception.
+	** 
+	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void verifyFalse(Bool cond, Str? msg := null) {
 		MyTest().verifyFalse(cond, msg)
 	}
 	
-	** Verify that a is null, otherwise throw a test failure exception.
-	** If msg is non-null, include it in a failure exception.
+	** Verify that 'a' is 'null', otherwise throw a test failure exception.
+	** 
+	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void verifyNull(Obj? a, Str? msg := null) {
 		MyTest().verifyNull(a, msg)
 	}
 	
-	** Verify that a is not null, otherwise throw a test failure exception.
-	** If msg is non-null, include it in a failure exception.
+	** Verify that 'a' is not null, otherwise throw a test failure exception.
+	** 
+	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void verifyNotNull(Obj? a, Str? msg := null) {
 		MyTest().verifyNotNull(a, msg)
 	}
 	
-	** Verify that a == b, otherwise throw a test failure exception.
-	** If msg is non-null, include it in failure exception.
+	** Verify that 'a == b', otherwise throw a test failure exception.
+	** 
+	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void verifyEq(Obj? a, Obj? b, Str? msg := null) {
 		MyTest().verifyEq(a, b, msg)
 	}
 	
-	** Verify that a != b, otherwise throw a test failure exception.
-	** If msg is non-null, include it in failure exception.
+	** Verify that 'a != b', otherwise throw a test failure exception.
+	** 
+	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void verifyNotEq(Obj? a, Obj? b, Str? msg := null) {
 		MyTest().verifyNotEq(a, b, msg)
@@ -104,7 +111,8 @@ const class AxontLib {
 	}
 	
 	** Throw a test failure exception.
-	** If msg is non-null, include it in the failure exception.
+	** 
+	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void fail(Obj? msg := null) {
 		MyTest().fail(msg?.toStr)
