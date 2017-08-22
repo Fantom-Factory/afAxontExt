@@ -165,6 +165,12 @@ src	:
     verifyErr =>
       "Hello Mum!"
     
+  // return msg
+  msg : verifyErr(
+  	() => throw "Boom!"
+  )
+  verifyEq(msg, "Boom!")
+  
   "okay"
   end
 

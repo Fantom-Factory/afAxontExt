@@ -71,18 +71,23 @@ const class AxontLib {
 	}
 
 	** Verify that the function throws an Err.
+	** The err msg is returned so you may do further (regex) tests on it.
 	**
 	** Example:
 	**   verifyErr =>
 	**     parseInt("@#!")
 	**
 	@Axon
-	static Void verifyErr(Fn fn) {
+	static Str verifyErr(Fn fn) {
 		axonCtx := AxonContext.curAxon(true)
 		try {
 			fn.call(axonCtx, Obj#.emptyList)
 			MyTest().fail("Err not thrown")
-		} catch { /* pass */ }
+		} catch (Err err) {
+			/* pass */
+			return getErrMsg(err)
+		}
+		throw Err("WTF?")
 	}
 	
 	** Verify that the function throws an Err.
@@ -101,12 +106,7 @@ const class AxontLib {
 			fn.call(axonCtx, Obj#.emptyList)
 			MyTest().fail("Err not thrown")
 		} catch (Err err) {
-			if (err is EvalErr && err.cause != null)
-				err = err.cause
-			msg := err.msg
-			if (err is ThrowErr)
-				msg = ((ThrowErr) err).tags.dis ?: "null"
-			verifyEq(errMsg, msg)
+			verifyEq(errMsg, getErrMsg(err))
 		}
 	}
 	
@@ -197,6 +197,15 @@ const class AxontLib {
 	@Axon
 	static Fn[] tests() {
 		Context.cur(true).funcs { it.name.startsWith("test") && it.name.getSafe(4).isUpper }.map { it.expr }
+	}
+	
+	private static Str getErrMsg(Err err) {
+		if (err is EvalErr && err.cause != null)
+			err = err.cause
+		msg := err.msg
+		if (err is ThrowErr)
+			msg = ((ThrowErr) err).tags.dis ?: "null"
+		return msg
 	}
 }
 
