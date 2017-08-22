@@ -121,8 +121,12 @@ const class AxontLib {
 	** Runs the given list of test functions and returns a Grid of results.
 	** 
 	** 'tests' may be a name of a top level function, the function itself, or a list of said types.
+	** 
+	** 'options' is a 'Dict' which may contains the following:
+	**  - 'setup' - a func that is run *before* every test function
+	**  - 'teardown' - a func that is run *after* every test function
 	@Axon
-	static Grid runTests(Obj tests) {
+	static Grid runTests(Obj tests, Dict? options := null) {
 		if (tests isnot Str && tests isnot Fn && tests isnot List)
 			throw ArgErr("tests must either be a Str, Fn, or a List of said types - ${tests.typeof}")
 		if (tests isnot List)
@@ -133,6 +137,10 @@ const class AxontLib {
 				throw ArgErr("tests[${i}] must either be a Str or Fn")
 		}
 
+		opts		:= Etc.dictToMap(options)
+		setupFn		:= (Fn?) opts["setup"]
+		teardownFn	:= (Fn?) opts["teardown"]
+		
 		axonCtx := AxonContext.curAxon(true)
 		results := ((Obj?[]) tests).map |test, i| {
 			start  := Duration.now
@@ -145,11 +153,14 @@ const class AxontLib {
 				.add("trace"	, null)
 			
 			try {
+				setupFn?.call(axonCtx, Obj#.emptyList)
+
 				testFn	:= (test as Fn) ?: axonCtx.findTop(test, false)
 				if (testFn == null)
 					throw Err("Unknown func: ${test}")
 				msg		:= testFn.call(axonCtx, Obj#.emptyList)
 				result["msg"] = msg?.toStr
+				
 				
 			} catch (Err err) {
 				if (err is EvalErr && err.cause != null)
@@ -158,7 +169,19 @@ const class AxontLib {
 				result["msg"] 	 = err.msg.replace("sys::", "")
 				result["trace"]	 = err.traceToStr
 			}
-			
+
+			try	teardownFn?.call(axonCtx, Obj#.emptyList)
+			catch (Err err) {
+				// don't overwrite existing err msgs - 'cos what came first is likely to be more important
+				if (result["result"].toStr.isEmpty) {
+					if (err is EvalErr && err.cause != null)
+						err = err.cause
+					result["result"] = "XXX"
+					result["msg"] 	 = err.msg.replace("sys::", "")
+					result["trace"]	 = err.traceToStr
+				}
+			}
+
 			result["dur"] = Number(Duration.now - start)
 			return Etc.makeDict(result)
 		}

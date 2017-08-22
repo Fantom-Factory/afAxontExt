@@ -105,6 +105,8 @@ Axont is an open source project licensed under the [ISC Licence]`https://en.wiki
 Release Notes
 *************
 
+**v0.0.4**
+ - New: Added 'setup' and 'teadown' to 'runTests()' options.
 **v0.0.2**
  - New: Preview release, created to test [Axonator]`https://stackhub.org/package/afAxonator` - *the Axon source code encryptor and obfuscator*.
 

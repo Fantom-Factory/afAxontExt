@@ -243,5 +243,21 @@ src	:
   res : runTests("testNotFound")
   verifyEq(res.first["msg"], "Unknown func: testNotFound")
   
+  // test setup
+  val : null
+  su1 : () => val = 69
+  fn2 : () => verifyEq(69, val)
+  runTests(fn2, {"setup" : su1})
+  
+  // test teardown
+  td1 : () => val = null
+  runTests(fn2, {"setup" : su1, "teardown" : td1})
+  verifyNull(val)
+  
+  // test teardown still called on test err
+  fn3 : () => throw "Boom"
+  runTests(fn3, {"setup" : su1, "teardown" : td1})
+  verifyNull(val)
+  
   "okay"
   end
