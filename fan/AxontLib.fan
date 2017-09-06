@@ -127,6 +127,9 @@ const class AxontLib {
 	**  - 'teardown' - a func that is run *after* every test function
 	@Axon
 	static Grid runTests(Obj tests, Dict? options := null) {
+		
+		// TODO log test start and end - have listener funcs
+		
 		if (tests isnot Str && tests isnot Fn && tests isnot List)
 			throw ArgErr("tests must either be a Str, Fn, or a List of said types - ${tests.typeof}")
 		if (tests isnot List)
