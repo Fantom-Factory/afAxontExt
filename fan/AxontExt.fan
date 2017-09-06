@@ -1,7 +1,7 @@
 using skyarcd::Ext
 using skyarcd::ExtMeta
 
-@ExtMeta { name="axont" }
+@ExtMeta { name="axont"; icon="afAxont" }
 const class AxontExt : Ext {
 
     override final Void onStart() {

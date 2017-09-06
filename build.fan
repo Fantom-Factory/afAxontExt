@@ -10,7 +10,8 @@ class Build : BuildPod {
         meta = [
             "pod.dis"       : "Axont",
 			"pod.uri"		: "https://stackhub.org/package/afAxontExt",
-            "repo.public"   : "true"
+            "repo.public"   : "true",
+			"skyarc.icons"	: "true",
         ]
 
         depends = [
@@ -24,7 +25,7 @@ class Build : BuildPod {
         ]
 
         srcDirs = [`fan/`]
-        resDirs = [`doc/`, `lib/`]
+        resDirs = [`doc/`, `lib/`, `svg/`]
 
         docApi = true
         docSrc = false
@@ -34,6 +35,7 @@ class Build : BuildPod {
         meta["afBuild.testPods"]    	= ""
         meta["afBuild.testDirs"]    	= "lib/"
         meta["afBuild.plainReadmeMd"]	= "true"
+        //meta["afBuild.skipReadmeMd"]	= "true"
 
 		index = [
 			"skyarc.ext": "afAxontExt::AxontExt",

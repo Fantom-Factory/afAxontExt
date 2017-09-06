@@ -107,7 +107,9 @@ Release Notes
 
 **v0.0.4**
  - New: Added 'setup' and 'teadown' to 'runTests()' options.
+ - New: Created alien icon for ext.
  - Chg: 'verifyErr' returns the err msg should you wish to perform further (regex) tests on it.
+
 **v0.0.2**
- - New: Preview release, created to test [Axonator]`https://stackhub.org/package/afAxonator` - *the Axon source code encryptor and obfuscator*.
+ - New: Preview release, created to test [Axonator]`https://stackhub.org/package/afAxonatorExt` - *the Axon source code encryptor and obfuscator*.
 
