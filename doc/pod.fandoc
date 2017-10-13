@@ -5,6 +5,8 @@ Quick Start
 First create some test functions in Axon. Test functions are typically prefixed with 'test', take no arguments, and optionally return 'okay' to signify just that.
 
 pre>
+syntax: axon
+
 testPassExample : () => do
   expected : "foo bar"
   actual   : "foo bar" // this bit should do some work!
@@ -29,6 +31,8 @@ end
 Then pass them to the test runner to have them executed.
 
 pre>
+syntax: axon
+
 // run tests
 [
   testPassExample,
@@ -98,7 +102,7 @@ FANDOC: afAxontExt::AxontLib.verifyErrMsg
 
 Licensing
 *********
-Escape the Mainframe is free software an open source project licensed under the permissive [ISC Licence]`https://en.wikipedia.org/wiki/ISC_license` by the Internet Systems Consortium - it is similar to the popular MIT licence, only shorter!
+Escape the Mainframe is free software and an open source project licensed under the permissive [ISC Licence]`https://en.wikipedia.org/wiki/ISC_license` by the Internet Systems Consortium - it is similar to the popular MIT licence, only shorter!
 
 
 

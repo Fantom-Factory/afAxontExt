@@ -74,6 +74,7 @@ const class AxontLib {
 	** The err msg is returned so you may do further (regex) tests on it.
 	**
 	** Example:
+	**   syntax: axon
 	**   verifyErr =>
 	**     parseInt("@#!")
 	**
@@ -94,6 +95,7 @@ const class AxontLib {
 	** The contained dis msg must be the same as errMsg.
 	**
 	** Example:
+	**   syntax: axon
 	**   verifyErrMsg("Invalid Int: '@#!'") () =>
 	**     parseInt("@#!")
 	** 
@@ -196,6 +198,7 @@ const class AxontLib {
 	** Use to quickly run all tests in a project.
 	** 
 	** Example:
+	**   syntax: axon
 	**   tests().runTests()
 	@Axon
 	static Fn[] tests() {
