@@ -3,6 +3,12 @@
 
 LEAD: An extension for SkySpark v3.0.12+ that provides a test runner and assertion functions for testing Axon code.
 
+- [Quick Start](#quickStart)
+- [Runner Functions](#runnerFunctions)
+- [Assertion Functions](#assertionFunctions)
+- [Licensing](#licensing)
+- [Release Notes](#releaseNotes)
+
 ## Quick Start
 
 First create some test functions in Axon. Test functions are typically prefixed with `test`, take no arguments, and optionally return `okay` to signify just that.
@@ -131,5 +137,5 @@ Example:
 
 ## Licensing
 
-Escape the Mainframe is free software an open source project licensed under the permissive [ISC Licence](https://en.wikipedia.org/wiki/ISC_license) by the Internet Systems Consortium - it is similar to the popular MIT licence, only shorter!
+AxonT Ext is free software and an open source project licensed under the permissive [ISC Licence](https://en.wikipedia.org/wiki/ISC_license) by the Internet Systems Consortium - it is similar to the popular MIT licence, only shorter!
 
