@@ -117,6 +117,9 @@ AxonT Ext is free software and an open source project licensed under the permiss
 Release Notes [#releaseNotes]
 *************
 
+**v0.0.6**
+ - Chg: Renamed extension from 'axont' to 'afAxont' for consistency with other Alien-Factory products.
+
 **v0.0.4**
  - New: Added 'setup' and 'teadown' to 'runTests()' options.
  - New: Created alien icon for ext.
