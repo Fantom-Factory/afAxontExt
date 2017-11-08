@@ -1,4 +1,4 @@
-#Axont v0.0.4
+#Axont v0.0.6
 ---
 
 LEAD: An extension for SkySpark v3.0.12+ that provides a test runner and assertion functions for testing Axon code.
