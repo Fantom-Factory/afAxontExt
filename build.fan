@@ -5,7 +5,7 @@ class Build : BuildPod {
     new make() {
         podName = "afAxontExt"
         summary = "Test runner and assertion functions for Axon"
-        version = Version("0.0.4")
+        version = Version("0.0.6")
 
         meta = [
             "pod.dis"       : "Axont",
