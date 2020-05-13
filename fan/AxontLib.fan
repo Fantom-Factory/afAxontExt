@@ -168,25 +168,35 @@ const class AxontLib {
 				
 				
 			} catch (Err err) {
-				if (err is EvalErr && err.cause != null)
-					err = err.cause
+			    traceStr := ""
+				if (err is EvalErr)
+				{
+					traceStr = traceStr + err.toStr + "\n"
+					traceStr = traceStr + (err as EvalErr).axonTrace + "\n"
+					if (err.cause != null) err = err.cause
+				}
 				result["result"] = "XXX"
-				result["msg"] 	 = err.msg.replace("sys::", "")
-				result["trace"]	 = err.traceToStr
+				result["msg"]    = err.msg.replace("sys::", "")
+				result["trace"]	 = traceStr + err.traceToStr
 			}
 
 			try	teardownFn?.call(axonCtx, Obj#.emptyList)
 			catch (Err err) {
 				// don't overwrite existing err msgs - 'cos what came first is likely to be more important
 				if (result["result"].toStr.isEmpty) {
-					if (err is EvalErr && err.cause != null)
-						err = err.cause
+					teardownTraceStr := ""
+					if (err is EvalErr)
+					{
+						teardownTraceStr = teardownTraceStr + err.toStr + "\n"
+						teardownTraceStr = teardownTraceStr + (err as EvalErr).axonTrace + "\n"
+						if (err.cause != null) err = err.cause
+					}
 					result["result"] = "XXX"
-					result["msg"] 	 = err.msg.replace("sys::", "")
-					result["trace"]	 = err.traceToStr
+					result["msg"]    = err.msg.replace("sys::", "")
+					result["trace"]	 = teardownTraceStr + err.traceToStr
 				}
 			}
-
+			
 			result["dur"] = Number(Duration.now - start)
 			return Etc.makeDict(result)
 		}
