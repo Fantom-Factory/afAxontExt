@@ -40,7 +40,7 @@ Then pass them to the test runner to have them executed.
       testPassExample,
       testFailExample
     ].runTests()
-    
+
 
 Results are returned in a handy grid:
 
