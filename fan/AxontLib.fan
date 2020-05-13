@@ -168,32 +168,18 @@ const class AxontLib {
 				
 				
 			} catch (Err err) {
-			    traceStr := ""
-				if (err is EvalErr)
-				{
-					traceStr = traceStr + err.toStr + "\n"
-					traceStr = traceStr + (err as EvalErr).axonTrace + "\n"
-					if (err.cause != null) err = err.cause
-				}
 				result["result"] = "XXX"
 				result["msg"]    = err.msg.replace("sys::", "")
-				result["trace"]	 = traceStr + err.traceToStr
+				result["trace"]	 = traceErr(err)
 			}
 
 			try	teardownFn?.call(axonCtx, Obj#.emptyList)
 			catch (Err err) {
 				// don't overwrite existing err msgs - 'cos what came first is likely to be more important
 				if (result["result"].toStr.isEmpty) {
-					teardownTraceStr := ""
-					if (err is EvalErr)
-					{
-						teardownTraceStr = teardownTraceStr + err.toStr + "\n"
-						teardownTraceStr = teardownTraceStr + (err as EvalErr).axonTrace + "\n"
-						if (err.cause != null) err = err.cause
-					}
 					result["result"] = "XXX"
 					result["msg"]    = err.msg.replace("sys::", "")
-					result["trace"]	 = teardownTraceStr + err.traceToStr
+					result["trace"]	 = traceErr(err)
 				}
 			}
 			
@@ -222,6 +208,20 @@ const class AxontLib {
 		if (err is ThrowErr)
 			msg = ((ThrowErr) err).tags.dis ?: "null"
 		return msg
+	}
+	
+	private static Str traceErr(Err err) {
+		traceStr := StrBuf()
+		if (err is EvalErr) {
+			traceStr.add(err.toStr).addChar('\n')
+			traceStr.addChar('\n')
+			traceStr.add("-- Axon trace: --\n")
+			traceStr.add((err as EvalErr).axonTrace).addChar('\n')
+			traceStr.add("-- Fantom trace: --\n")
+			if (err.cause != null) err = err.cause
+		}
+		traceStr.add(err.trace(traceStr.out))
+		return traceStr.toStr
 	}
 }
 
