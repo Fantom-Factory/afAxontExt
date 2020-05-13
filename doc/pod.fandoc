@@ -1,10 +1,8 @@
-LEAD: An extension for SkySpark v3.0.12+ that provides a test runner and assertion functions for testing Axon code.
+LEAD: An extension for SkySpark v3.0.12+ that provides a unit test runner and assertion functions for testing Axon code.
 
 - [Quick Start]`#quickStart`
-- [Runner Functions]`#runnerFunctions`
-- [Assertion Functions]`#assertionFunctions`
 - [Licensing]`#licensing`
-- [Release Notes]`#releaseNotes`
+- [Version Notes]`#releaseNotes`
 
 
 
@@ -50,61 +48,7 @@ syntax: axon
 
 Results are returned in a handy grid:
 
-![Axont Result Grid]`data:testResults.png`
-
-
-
-Runner Functions [#runnerFunctions]
-****************
-
-runTests(tests) [#runTests]
-=================
-FANDOC: afAxontExt::AxontLib.runTests
-
-tests() [#tests]
-====
-FANDOC: afAxontExt::AxontLib.tests
-
-
-
-Assertion Functions [#assertionFunctions]
-*******************
-
-verify(cond, msg: null) [#verify]
-====
-FANDOC: afAxontExt::AxontLib.verify
-
-verifyTrue(cond, msg: null) [#verifyTrue]
-====
-FANDOC: afAxontExt::AxontLib.verifyTrue
-
-verifyFalse(cond, msg: null) [#verifyFalse]
-====
-FANDOC: afAxontExt::AxontLib.verifyFalse
-
-verifyNull(a, msg: null) [#verifyNull]
-====
-FANDOC: afAxontExt::AxontLib.verifyNull
-
-verifyNotNull(a, msg: null) [#verifyNotNull]
-====
-FANDOC: afAxontExt::AxontLib.verifyNotNull
-
-verifyEq(a, b, msg: null) [#verifyEq]
-====
-FANDOC: afAxontExt::AxontLib.verifyEq
-
-verifyNotEq(a, b, msg: null) [#verifyNotEq]
-====
-FANDOC: afAxontExt::AxontLib.verifyNotEq
-
-verifyErr(fn) [#verifyErr]
-====
-FANDOC: afAxontExt::AxontLib.verifyErr
-
-verifyErrMsg(msg, fn) [#verifyErrMsg]
-====
-FANDOC: afAxontExt::AxontLib.verifyErrMsg
+![Axont Result Grid]`testResults.png`
 
 
 
@@ -114,8 +58,11 @@ AxonT Ext is free software and an open source project licensed under the permiss
 
 
 
-Release Notes [#releaseNotes]
+Version Notes [#releaseNotes]
 *************
+
+**v0.0.8**
+ - Chg: Ensure the Axon trace is captured by 'runTests()' results. (Thanks go to John MacEnri / Crawley Carbon for the pull requst.)
 
 **v0.0.6**
  - Chg: Renamed extension from 'axont' to 'afAxont' for consistency with other Alien-Factory products.

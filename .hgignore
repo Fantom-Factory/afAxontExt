@@ -1,6 +1,0 @@
-syntax: glob
-bin
-build
-sky
-
-syntax: regexp
