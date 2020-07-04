@@ -61,6 +61,9 @@ AxonT Ext is free software and an open source project licensed under the permiss
 Version Notes [#releaseNotes]
 *************
 
+**v0.0.10**
+ - Chg: 'verifyEq()' and 'verifyNotEq()' are more lenient when testing Lists and Dicts. (e.g. the backing Fantom List type is ignored, 'Etc.dictEq()' is now used but also patched for [this bug]`https://skyfoundry.com/forum/topic/5082`.)
+
 **v0.0.8**
  - Chg: Ensure the Axon trace is captured by 'runTests()' results. (Thanks go to John MacEnri / Crawley Carbon for the pull requst.)
 

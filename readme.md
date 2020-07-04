@@ -1,4 +1,4 @@
-# Axont v0.0.8
+# Axont v0.0.10
 ---
 
 An extension for SkySpark v3.0.12+ that provides a unit test runner and assertion functions for testing Axon code.
@@ -40,17 +40,22 @@ Then pass them to the test runner to have them executed.
       testPassExample,
       testFailExample
     ].runTests()
-
+    
 
 Results are returned in a handy grid:
 
-![Axont Result Grid](doc/testResults.png)
+![Axont Result Grid](http://eggbox.fantomfactory.org/pods/afAxontExt/doc/testResults.png)
 
 ## <a name="licensing"></a>Licensing
 
 AxonT Ext is free software and an open source project licensed under the permissive [ISC Licence](https://en.wikipedia.org/wiki/ISC_license) by the Internet Systems Consortium - it is similar to the popular MIT licence, only shorter!
 
 ## <a name="releaseNotes"></a>Version Notes
+
+**v0.0.10**
+
+* Chg: `verifyEq()` and `verifyNotEq()` are more lenient when testing Lists and Dicts. (e.g. the backing Fantom List type is ignored, `Etc.dictEq()` is now used but also patched for [this bug](https://skyfoundry.com/forum/topic/5082).)
+
 
 **v0.0.8**
 

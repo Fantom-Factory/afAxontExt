@@ -59,7 +59,8 @@ const class AxontLib {
 	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void verifyEq(Obj? a, Obj? b, Str? msg := null) {
-		MyTest().verifyEq(a, b, msg)
+		if (!areEq(a, b))
+			MyTest().verifyEq(a, b, msg)
 	}
 	
 	** Verify that 'a != b', otherwise throw a test failure exception.
@@ -67,7 +68,8 @@ const class AxontLib {
 	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void verifyNotEq(Obj? a, Obj? b, Str? msg := null) {
-		MyTest().verifyNotEq(a, b, msg)
+		if (areEq(a, b))
+			MyTest().verifyNotEq(a, b, msg)
 	}
 
 	** Verify that the function throws an Err.
@@ -222,6 +224,27 @@ const class AxontLib {
 		}
 		traceStr.add(err.trace(traceStr.out))
 		return traceStr.toStr
+	}
+	
+	** Lists and Dicts have their eq problems - so let's 
+	private static Bool areEq(Obj? o1, Obj? o2) {
+		if (o1 is List && o2 is List) {
+			// List.equals() also compares the list type - which we don't want
+			l1 := (List) o1
+			l2 := (List) o2
+			if (l1.size != l2.size) return false
+			return l1.all |meh, i| { areEq(l1[i], l2[i]) }
+		}
+
+		if (o1 is Dict && o2 is Dict) {
+			// Dicts with nulls are NOT the same!?
+			// https://skyfoundry.com/forum/topic/5082
+			o1 = Etc.makeDict(Etc.dictToMap(o1).exclude { it == null })
+			o2 = Etc.makeDict(Etc.dictToMap(o2).exclude { it == null })
+			return Etc.dictEq(o1, o2)
+		}
+
+		return o1 == o2
 	}
 }
 
