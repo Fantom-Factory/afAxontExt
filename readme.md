@@ -1,4 +1,4 @@
-# Axont v0.0.10
+# Axont v0.1.0
 ---
 
 An extension for SkySpark v3.0.12+ that provides a unit test runner and assertion functions for testing Axon code.

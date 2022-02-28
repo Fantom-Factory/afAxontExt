@@ -2,5 +2,5 @@
 <buildpath>
 	<buildpathentry kind="src" path="fan"/>
 	<buildpathentry kind="src" path="test"/>
-	<buildpathentry kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER/com.xored.fanide.internal.debug.ui.launcher.GenericFanInstallType/skyspark-3.0.23"/>
+	<buildpathentry kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER/com.xored.fanide.internal.debug.ui.launcher.GenericFanInstallType/skyspark-3.1.2"/>
 </buildpath>

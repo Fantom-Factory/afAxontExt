@@ -138,7 +138,7 @@ const class AxontLib {
 			throw ArgErr("tests must either be a Str, Fn, or a List of said types - ${tests.typeof}")
 		if (tests isnot List)
 			tests = [tests]
-		
+	
 		((Obj?[]) tests).each |test, i| {
 			if (test isnot Str && test isnot Fn)
 				throw ArgErr("tests[${i}] must either be a Str or Fn")
