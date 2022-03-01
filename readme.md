@@ -1,12 +1,13 @@
 # Axont v0.1.0
 ---
 
-An extension for SkySpark v3.0.12+ that provides a unit test runner and assertion functions for testing Axon code.
+An extension for SkySpark v3.1.1+ that provides a unit test runner and assertion functions for testing Axon code.
 
 * [Quick Start](#quickStart)
 * [Licensing](#licensing)
-* [Version Notes](#releaseNotes)
 
+
+AxonT source code is available on [Fantom Factory's GitHub - AxonT](https://github.com/Fantom-Factory/afAxontExt).
 
 ## <a name="quickStart"></a>Quick Start
 
@@ -49,33 +50,4 @@ Results are returned in a handy grid:
 ## <a name="licensing"></a>Licensing
 
 AxonT Ext is free software and an open source project licensed under the permissive [ISC Licence](https://en.wikipedia.org/wiki/ISC_license) by the Internet Systems Consortium - it is similar to the popular MIT licence, only shorter!
-
-## <a name="releaseNotes"></a>Version Notes
-
-**v0.0.10**
-
-* Chg: `verifyEq()` and `verifyNotEq()` are more lenient when testing Lists and Dicts. (e.g. the backing Fantom List type is ignored, `Etc.dictEq()` is now used but also patched for [this bug](https://skyfoundry.com/forum/topic/5082).)
-
-
-**v0.0.8**
-
-* Chg: Ensure the Axon trace is captured by `runTests()` results. (Thanks go to John MacEnri / Crawley Carbon for the pull requst.)
-
-
-**v0.0.6**
-
-* Chg: Renamed extension from `axont` to `afAxont` for consistency with other Alien-Factory products.
-
-
-**v0.0.4**
-
-* New: Added `setup` and `teadown` to `runTests()` options.
-* New: Created alien icon for ext.
-* Chg: `verifyErr` returns the err msg should you wish to perform further (regex) tests on it.
-
-
-**v0.0.2**
-
-* New: Preview release, created to test [Axonator](https://stackhub.org/package/afAxonatorExt) - *the Axon source code encryptor and obfuscator*.
-
 

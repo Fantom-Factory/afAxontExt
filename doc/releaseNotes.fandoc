@@ -1,0 +1,30 @@
+v0.1 Releases [#v0.1.x]
+*************
+Versions compatible with SkySpark v3.1.x.
+
+**v0.1.0** [#v0.1.0]
+ - Chg: Re-compiled against SkySpark v3.1.
+
+
+
+v0.0 Releases [#v0.0.x]
+*************
+Versions compatible with SkySpark v3.0.x.
+
+**v0.0.10** [#v0.0.10]
+ - Chg: 'verifyEq()' and 'verifyNotEq()' are more lenient when testing Lists and Dicts. (e.g. the backing Fantom List type is ignored, 'Etc.dictEq()' is now used but also patched for [this bug]`https://skyfoundry.com/forum/topic/5082`.)
+
+**v0.0.8** [#v0.0.8]
+ - Chg: Ensure the Axon trace is captured by 'runTests()' results. (Thanks go to John MacEnri / Crawley Carbon for the pull requst.)
+
+**v0.0.6** [#v0.0.6]
+ - Chg: Renamed extension from 'axont' to 'afAxont' for consistency with other Alien-Factory products.
+
+**v0.0.4** [#v0.0.4]
+ - New: Added 'setup' and 'teadown' to 'runTests()' options.
+ - New: Created alien icon for ext.
+ - Chg: 'verifyErr' returns the err msg should you wish to perform further (regex) tests on it.
+
+**v0.0.2** [#v0.0.2]
+ - New: Preview release, created to test [Axonator]`https://stackhub.org/package/afAxonatorExt` - *the Axon source code encryptor and obfuscator*.
+
