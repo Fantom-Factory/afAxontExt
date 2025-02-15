@@ -17,7 +17,6 @@ using axon::Loc
 
 using projMod::StdProjLib
 
-
 ** Axon functions for Axont.
 const class AxontLib {
 
@@ -25,8 +24,8 @@ const class AxontLib {
 	** Runs the given Fn in a new virgin SkySpark project.
 	@Axon
 	static Obj? runInTestProj(Fn fn) {
-		loc			:= Loc("AxonT")
 		curCtx		:= ctx
+		loc			:= Loc("afAxontExt.runInTestProj")
 		projNewFn	:= curCtx.findTop("projNew")		// projMod::StdProjLib.projNew()
 		projDelFn	:= curCtx.findTop("projDelete")		// projMod::StdProjLib.projDelete()
 		
@@ -41,12 +40,15 @@ const class AxontLib {
 			"projMeta"	: Marker.val,
 		])], loc)
 		
+		// the curFrame is runInTestProj(), so parent vars in in stack[-2]
+		// not sure why the vars aren't returned through ctx.varsInScope() ???
 		proj		:= curCtx.sys.proj.local(projName)
-		
+		vars		:= curCtx->stack->get(-2)->vars
+
 		try {
 			suUser	:= makeSyntheticUser("axontTestUser", "su")
 			axonCtx := Context.make(ctx.sys, suUser, proj)
-			result	:= fn.callx(axonCtx, Obj#.emptyList, loc)
+			result	:= axonCtx.callInNewFrame(fn, Obj#.emptyList, loc, vars)
 			return result
 		}
 		finally projDelFn.callx(curCtx, [Ref("p:${projName}"), Date.today.toIso], loc)
