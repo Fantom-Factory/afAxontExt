@@ -242,8 +242,8 @@ const class AxontLib {
 					result["trace"]	 = traceErr(err)
 				}
 			}
-			
-			result["dur"] = Number(Duration.now - start)
+	
+			result["dur"] = Number((Duration.now - start).floor(1ms), Unit("ms"))
 			return Etc.makeDict(result)
 		}
 		
