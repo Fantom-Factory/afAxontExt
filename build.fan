@@ -22,6 +22,7 @@ class Build : BuildPod {
 			"haystack   3.1.1  - 3.1",
 			"skyarc     3.1.1  - 3.1",
 			"skyarcd    3.1.1  - 3.1",
+			"projMod    3.1.1  - 3.1",
 		]
 
 		srcDirs = [`fan/`, `test/`]

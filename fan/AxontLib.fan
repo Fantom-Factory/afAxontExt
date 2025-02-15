@@ -9,9 +9,65 @@ using haystack::Grid
 using haystack::Number
 using skyarcd::Context
 
+using skyarc::User
+using haystack::Ref
+using axon::FantomFn
+using haystack::Marker
+using axon::Loc
+
+using projMod::StdProjLib
+
+
 ** Axon functions for Axont.
 const class AxontLib {
 
+	
+	** Runs the given Fn in a new virgin SkySpark project.
+	@Axon
+	static Obj? runInTestProj(Fn fn) {
+		loc			:= Loc("AxonT")
+		curCtx		:= ctx
+		projNewFn	:= curCtx.findTop("projNew")		// projMod::StdProjLib.projNew()
+		projDelFn	:= curCtx.findTop("projDelete")		// projMod::StdProjLib.projDelete()
+		
+		// projName MUST 
+		//  - be at least 4 chars
+		//  - not contain the reserved strings "axon", "proj"
+		// add some random chars to avoid clashes with any existing projs 
+		projName	:= "test_" + Int.random(0..9999).toStr.padl(4, '0')
+		projDict	:= projNewFn.callx(curCtx, [Etc.makeDict([
+			"name"		: projName,
+			"dis"		: "AxonT Test Proj",
+			"projMeta"	: Marker.val,
+		])], loc)
+		
+		proj		:= curCtx.sys.proj.local(projName)
+		
+		try {
+			suUser	:= makeSyntheticUser("axontTestUser", "su")
+			axonCtx := Context.make(ctx.sys, suUser, proj)
+			result	:= fn.callx(axonCtx, Obj#.emptyList, loc)
+			return result
+		}
+		finally projDelFn.callx(curCtx, [Ref("p:${projName}"), Date.today.toIso], loc)
+	}
+
+	private static Context ctx(Bool checked := true) {
+		Context.cur(checked)
+	}
+	private static User makeSyntheticUser(Str username, Str role, [Str:Obj]? extraTags := null) {
+		tags := Str:Obj[
+			"id"		: Ref("u:$username"), 
+			"username"	: username, 
+			"userRole"	: role, 
+			"mod"		: DateTime.now
+		]
+		if (extraTags != null) tags.setAll(extraTags)
+		return User(Etc.makeDict(tags))
+	}	
+	
+	
+	
 	** Verify that cond is true, otherwise throw a test failure exception.
 	** 
 	** If 'msg' is non-null, include it in a failure exception.
