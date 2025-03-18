@@ -2,6 +2,10 @@ v0.1 Releases [#v0.1.x]
 *************
 Versions compatible with SkySpark v3.1.x.
 
+**v0.1.2** [#v0.1.2]
+ - New: 'runInTestProj()' func that runs a given fn in a brand new SkySpark project. 
+ - Chg: Round test durations to milli-seconds.
+
 **v0.1.0** [#v0.1.0]
  - Chg: Re-compiled against SkySpark v3.1.
 
