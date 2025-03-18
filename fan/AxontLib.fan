@@ -117,6 +117,16 @@ const class AxontLib {
 	** If 'msg' is non-null, include it in a failure exception.
 	@Axon
 	static Void verifyEq(Obj? a, Obj? b, Str? msg := null) {
+		if (a is Dict && b is Dict) {
+			// Dicts with nulls are NOT the same!?
+			// https://skyfoundry.com/forum/topic/5082
+			o1 := Etc.makeDict(Etc.dictToMap(a).exclude { it == null })
+			o2 := Etc.makeDict(Etc.dictToMap(b).exclude { it == null })
+			if (Etc.dictEq(o1, o2) == false)
+				MyTest().verifyEq(o1, o2, msg)
+			return
+		}
+
 		if (!areEq(a, b))
 			MyTest().verifyEq(a, b, msg)
 	}
@@ -211,10 +221,10 @@ const class AxontLib {
 			start  := Duration.now
 			fnName := (test as Str) ?: ((Fn) test).name 
 			result := Str:Obj?[:] { ordered = true }
-				.add("result"	, "")
+				.add("result"	, "okay")
 				.add("name"		, fnName)
 				.add("dur"		, null)
-				.add("msg"		, "okay")
+				.add("msg"		, null)
 				.add("trace"	, null)
 			
 			try {
@@ -236,7 +246,7 @@ const class AxontLib {
 			try	teardownFn?.call(axonCtx, Obj#.emptyList)
 			catch (Err err) {
 				// don't overwrite existing err msgs - 'cos what came first is likely to be more important
-				if (result["result"].toStr.isEmpty) {
+				if (result["result"].toStr == "okay") {
 					result["result"] = "XXX"
 					result["msg"]    = err.msg.replace("sys::", "")
 					result["trace"]	 = traceErr(err)
