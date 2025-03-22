@@ -10,66 +10,15 @@ using haystack::Number
 using skyarcd::Context
 
 using skyarc::User
+using skyarcd::Proj
 using haystack::Ref
 using axon::FantomFn
 using haystack::Marker
 using axon::Loc
 
-using projMod::StdProjLib
-
 ** Axon functions for Axont.
 const class AxontLib {
 
-	
-	** Runs the given Fn in a new virgin SkySpark project.
-	@Axon
-	static Obj? runInTestProj(Fn fn) {
-		curCtx		:= ctx
-		loc			:= Loc("afAxontExt.runInTestProj")
-		projNewFn	:= curCtx.findTop("projNew")		// projMod::StdProjLib.projNew()
-		projDelFn	:= curCtx.findTop("projDelete")		// projMod::StdProjLib.projDelete()
-		
-		// projName MUST 
-		//  - be at least 4 chars
-		//  - not contain the reserved strings "axon", "proj"
-		// add some random chars to avoid clashes with any existing projs 
-		projName	:= "test_" + Int.random(0..9999).toStr.padl(4, '0')
-		projDict	:= projNewFn.callx(curCtx, [Etc.makeDict([
-			"name"		: projName,
-			"dis"		: "AxonT Test Proj",
-			"projMeta"	: Marker.val,
-		])], loc)
-		
-		// the curFrame is runInTestProj(), so parent vars in in stack[-2]
-		// not sure why the vars aren't returned through ctx.varsInScope() ???
-		proj		:= curCtx.sys.proj.local(projName)
-		vars		:= curCtx->stack->get(-2)->vars
-
-		try {
-			suUser	:= makeSyntheticUser("axontTestUser", "su")
-			axonCtx := Context.make(ctx.sys, suUser, proj)
-			result	:= axonCtx.callInNewFrame(fn, Obj#.emptyList, loc, vars)
-			return result
-		}
-		finally projDelFn.callx(curCtx, [Ref("p:${projName}"), Date.today.toIso], loc)
-	}
-
-	private static Context ctx(Bool checked := true) {
-		Context.cur(checked)
-	}
-	private static User makeSyntheticUser(Str username, Str role, [Str:Obj]? extraTags := null) {
-		tags := Str:Obj[
-			"id"		: Ref("u:$username"), 
-			"username"	: username, 
-			"userRole"	: role, 
-			"mod"		: DateTime.now
-		]
-		if (extraTags != null) tags.setAll(extraTags)
-		return User(Etc.makeDict(tags))
-	}	
-	
-	
-	
 	** Verify that cond is true, otherwise throw a test failure exception.
 	** 
 	** If 'msg' is non-null, include it in a failure exception.
@@ -189,16 +138,28 @@ const class AxontLib {
 	static Void fail(Obj? msg := null) {
 		MyTest().fail(msg?.toStr)
 	}
-
+	
+	** Returns a list of all top level funcs in the project whose name starts with 'test'.
+	** Use to quickly run all tests in a project.
+	** 
+	** Example:
+	**   syntax: axon
+	**   tests().runTests()
+	@Axon
+	static Fn[] tests() {
+		Context.cur(true).funcs { it.name.startsWith("test") && it.name.getSafe(4).isUpper }.map { it.expr }
+	}
+	
 	** Runs the given list of test functions and returns a Grid of results.
 	** 
 	** 'tests' may be a name of a top level function, the function itself, or a list of said types.
 	** 
 	** 'options' is a 'Dict' which may contains the following:
-	**  - 'setup' - a func that is run *before* every test function
-	**  - 'teardown' - a func that is run *after* every test function
+	**  - 'setup'         - a func that is run *before* every test function
+	**  - 'teardown'      - a func that is run *after* every test function
+	**  - 'runInTestProj' - a marker to denote that each test (and any 'setup()' and 'teardown()' func) should be run in its own test project. 
 	@Axon
-	static Grid runTests(Obj tests, Dict? options := null) {
+	static Grid runTests(Obj tests, Dict? opts := null) {
 		
 		// TODO log test start and end - have listener funcs
 		
@@ -212,11 +173,10 @@ const class AxontLib {
 				throw ArgErr("tests[${i}] must either be a Str or Fn")
 		}
 
-		opts		:= Etc.dictToMap(options)
+		opts		 = opts ?: Etc.emptyDict
 		setupFn		:= (Fn?) opts["setup"]
 		teardownFn	:= (Fn?) opts["teardown"]
 		
-		axonCtx := AxonContext.curAxon(true)
 		results := ((Obj?[]) tests).map |test, i| {
 			start  := Duration.now
 			fnName := (test as Str) ?: ((Fn) test).name 
@@ -227,31 +187,41 @@ const class AxontLib {
 				.add("msg"		, null)
 				.add("trace"	, null)
 			
-			try {
-				setupFn?.call(axonCtx, Obj#.emptyList)
+			callAxonFn := null as |Obj? axonFn -> Obj?|
+			runTestFn  := |->| {
+				try {
+					callAxonFn(setupFn)
 
-				testFn	:= (test as Fn) ?: axonCtx.findTop(test, false)
-				if (testFn == null)
-					throw Err("Unknown func: ${test}")
-				msg		:= testFn.call(axonCtx, Obj#.emptyList)
-				result["msg"] = msg?.toStr
-				
-				
-			} catch (Err err) {
-				result["result"] = "XXX"
-				result["msg"]    = err.msg.replace("sys::", "")
-				result["trace"]	 = traceErr(err)
-			}
-
-			try	teardownFn?.call(axonCtx, Obj#.emptyList)
-			catch (Err err) {
-				// don't overwrite existing err msgs - 'cos what came first is likely to be more important
-				if (result["result"].toStr == "okay") {
+					result["msg"] = callAxonFn(test)?.toStr
+	
+				} catch (Err err) {
 					result["result"] = "XXX"
 					result["msg"]    = err.msg.replace("sys::", "")
 					result["trace"]	 = traceErr(err)
 				}
+
+				try	callAxonFn(teardownFn)
+				catch (Err err) {
+					// don't overwrite existing err msgs - 'cos what came first is likely to be more important
+					if (result["result"].toStr == "okay") {
+						result["result"] = "XXX"
+						result["msg"]    = err.msg.replace("sys::", "")
+						result["trace"]	 = traceErr(err)
+					}
+				}
 			}
+			
+			runInTestProj := opts.get("runInTestProj")
+			if (runInTestProj == null || runInTestProj == false) {
+				callAxonFn = |Obj? axonFn -> Obj?| { AxontLib.callAxonFn(axonFn) }
+				runTestFn()
+			}
+			else
+				AxontRunner().runInTestProj |runner| {
+					callAxonFn = |Obj? axonFn -> Obj?| { runner.callAxonFn(axonFn) }
+					runTestFn()
+					return null
+				}
 	
 			result["dur"] = Number((Duration.now - start).floor(1ms), Unit("ms"))
 			return Etc.makeDict(result)
@@ -259,18 +229,29 @@ const class AxontLib {
 		
 		return Etc.makeDictsGrid(null, results).reorderCols("result name dur msg trace".split)
 	}
-	
-	** Returns a list of all top level funcs in the project whose name starts with 'test'.
-	** Use to quickly run all tests in a project.
-	** 
-	** Example:
-	**   syntax: axon
-	**   tests().runTests()
+
+	** Runs the given Fn in a new virgin SkySpark project.
 	@Axon
-	static Fn[] tests() {
-		Context.cur(true).funcs { it.name.startsWith("test") && it.name.getSafe(4).isUpper }.map { it.expr }
+	static Obj? runInTestProj(Fn fn) {
+		AxontRunner().runInTestProj {
+			it.callAxonFn(fn)
+		}
 	}
 	
+	** Calls the given Axon Fn (or fn name) in the context of the new project.
+	static private Obj? callAxonFn(Obj? axonObj, Obj?[]? args := null) {
+		if (axonObj == null)
+			return null
+
+		axonCtx := Context.cur(true)
+		loc		:= Loc("afAxontExt.runTests")
+		axonFn  := (axonObj as Fn) ?: axonCtx.findTop(axonObj.toStr, false)
+		if (axonFn == null)
+			throw Err("Unknown func: ${axonObj}")
+
+		return axonCtx.callInNewFrame(axonFn, args ?: Obj#.emptyList, loc)
+	}
+
 	private static Str getErrMsg(Err err) {
 		if (err is EvalErr && err.cause != null)
 			err = err.cause
