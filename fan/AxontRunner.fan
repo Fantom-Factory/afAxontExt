@@ -59,32 +59,33 @@ internal class AxontRunner {
 			"name"		: projName,
 			"dis"		: "AxonT Test Proj",
 			"projMeta"	: Marker.val,
+			"afAxont"	: Marker.val,
 		])], loc)
 
-		// the curFrame is runInTestProj(), so parent vars in in stack[-2]
-		// not sure why the vars aren't returned through ctx.varsInScope() ???
-		proj		:= curCtx.sys.proj.local(projName)
-
-		// add extensions - making sure to add them in the order of depends
-		sortExtsViaDepends(proj, exts).each |def| {
-			proj.extAdd(def)
-		}
-	
-		// copy over recs
-		recGrid := CoreLib.swizzleRefs(curCtx.readAll(recs))
-		recDict := HxCoreFuncs.stripUncommittable(recGrid) as Dict[]
-		recDiff := recDict.map |row| {
-			id := row.get("id")
-			row = Etc.dictRemove(row, "id")
-			return Diff.makeAdd(row, id)
-		}
-		proj.commitAll(recDiff)
-
-		// try to put the proj into a steady state, as per ProjTest.forceSteadyState()
-		try proj->testForceSteadyState
-		catch (Err err) { proj.log.warn("Could not force steady state - ${err.msg}") }
-
 		try {
+			// the curFrame is runInTestProj(), so parent vars in in stack[-2]
+			// not sure why the vars aren't returned through ctx.varsInScope() ???
+			proj		:= curCtx.sys.proj.local(projName)
+
+			// add extensions - making sure to add them in the order of depends
+			sortExtsViaDepends(proj, exts).each |def| {
+				proj.extAdd(def)
+			}
+		
+			// copy over recs
+			recGrid := CoreLib.swizzleRefs(curCtx.readAll(recs))
+			recDict := HxCoreFuncs.stripUncommittable(recGrid) as Dict[]
+			recDiff := recDict.map |row| {
+				id := row.get("id")
+				row = Etc.dictRemove(row, "id")
+				return Diff.makeAdd(row, id)
+			}
+			proj.commitAll(recDiff)
+
+			// try to put the proj into a steady state, as per ProjTest.forceSteadyState()
+			try proj->testForceSteadyState
+			catch (Err err) { proj.log.warn("Could not force steady state - ${err.msg}") }
+
 			suUser	:= makeSyntheticUser("axontTestUser", "su")
 			axonCtx  = Context.make(curCtx.sys, suUser, proj)
 			return fn(this)

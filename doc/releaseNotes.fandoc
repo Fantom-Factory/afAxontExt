@@ -2,9 +2,15 @@ v0.1 Releases [#v0.1.x]
 *************
 Versions compatible with SkySpark v3.1.x.
 
+**v0.1.4** [#v0.1.4]
+ - New: 'runTests()' now takes a 'runInNewProj' marker tag to run every test in the suite in its own project.
+ - New: 'runTestsInNewProj()' func.
+ - New: When running tests in a new proj, by default all current exts are enabled and all funcs are copied over.
+ - New: Add an 'afAxont' marker tag to the 'projMeta' of every test project.
+
 **v0.1.2** [#v0.1.2]
- - New: 'runInTestProj()' func that runs a given fn in a brand new SkySpark project. 
- - Chg: Round test durations to milli-seconds.
+ - New: 'runInNewProj()' func that runs a given fn in a brand new SkySpark project. 
+ - Chg: Test durations are rounded to the nearest milli-second.
 
 **v0.1.0** [#v0.1.0]
  - Chg: Re-compiled against SkySpark v3.1.
