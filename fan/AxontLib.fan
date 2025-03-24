@@ -157,7 +157,13 @@ const class AxontLib {
 	** 'options' is a 'Dict' which may contains the following:
 	**  - 'setup'         - a func that is run *before* every test function
 	**  - 'teardown'      - a func that is run *after* every test function
-	**  - 'runInTestProj' - a marker to denote that each test (and any 'setup()' and 'teardown()' func) should be run in its own test project. 
+	**  - 'runInNewProj'  - a marker to denote that each test should be run in its own test project. The 'setup()' and 'teardown()' fns are run in the same proj as the test.
+	**  - 'exts'          - a list of string ext names that should be enabled in the new proj.
+	**  - 'recs'          - a string filter expr of all records to be copied over to the new proj.
+	** 
+	** When running tests in a new project, unless 'exts' or 'recs' are defined, then all enabled 
+	** exts in current project are also enabled in the new project. And all 'func or def' records
+	** are copied over also.  
 	@Axon
 	static Grid runTests(Obj tests, Dict? opts := null) {
 		
@@ -211,13 +217,13 @@ const class AxontLib {
 				}
 			}
 			
-			runInTestProj := opts.get("runInTestProj")
-			if (runInTestProj == null || runInTestProj == false) {
+			runInNewProj := opts.get("runInNewProj")
+			if (runInNewProj == null || runInNewProj == false) {
 				callAxonFn = |Obj? axonFn -> Obj?| { AxontLib.callAxonFn(axonFn) }
 				runTestFn()
 			}
 			else
-				AxontRunner().runInTestProj |runner| {
+				AxontRunner(opts).runInNewProj |runner| {
 					callAxonFn = |Obj? axonFn -> Obj?| { runner.callAxonFn(axonFn) }
 					runTestFn()
 					return null
@@ -230,12 +236,14 @@ const class AxontLib {
 		return Etc.makeDictsGrid(null, results).reorderCols("result name dur msg trace".split)
 	}
 
-	** Runs the given Fn in a new virgin SkySpark project.
+	** Convenience for '[...].runTests({runInNewProj})'.
 	@Axon
-	static Obj? runInTestProj(Fn fn) {
-		AxontRunner().runInTestProj {
-			it.callAxonFn(fn)
-		}
+	static Grid runTestsInNewProj(Obj tests, Dict? opts := null) {
+		runTests(tests, 
+			opts == null
+				? Etc.makeDict1("runInNewProj", Marker.val)
+				: Etc.dictSet(opts, "runInNewProj", Marker.val)
+		)
 	}
 	
 	** Calls the given Axon Fn (or fn name) in the context of the new project.

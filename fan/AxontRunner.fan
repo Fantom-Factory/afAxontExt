@@ -1,29 +1,54 @@
 using axon::Fn
 using axon::EvalErr
 using axon::Loc
+using axon::CoreLib
 using haystack::Etc
 using haystack::Ref
+using haystack::Dict
 using haystack::Marker
+using haystack::Symbol
 using skyarcd::Context
 using skyarcd::Proj
 using skyarc::User
+using skyarc::ExtDef
+using hx::HxCoreFuncs
+using folio::Diff
 
 internal class AxontRunner {
 	
 	private Loc?		loc
 	private [Str:Obj?]?	vars
 	private Context?	axonCtx
+	private	Str[]?		exts
+	private	Str?		recs
+	
+	new make(Dict opts) {
+		this.exts = opts.get("exts")
+		this.recs = opts.get("recs")
+		
+		// default to enabling all the exts in the current Proj
+		if (exts == null)
+			exts = Context.cur(true).proj.extStatus
+				.findAll |row| { row.has("enabled") }
+				.colToList("name", Str#)
+		
+		// default to copying over funcs and defs
+		if (recs == null)
+			recs = "func or def"
+	}
 	
 	** Runs the given fn in the context of a new SkySpark project.
 	** The fn may call 'callAxonFn()'.
-	Obj? runInTestProj(|AxontRunner->Obj?| fn) {
+	Obj? runInNewProj(|AxontRunner->Obj?| fn) {
 		if (axonCtx != null)
 			throw Err("Could not runInTestProj - this instance may only be used once")
 
-		loc			 = Loc("afAxontExt.runInTestProj")
+		// dup() is VERY important - it prevents SkySpark from adding more vars to it! :)
 		curCtx		:= Context.cur(true)
 		projNewFn	:= curCtx.findTop("projNew")		// projMod::StdProjLib.projNew()
 		projDelFn	:= curCtx.findTop("projDelete")		// projMod::StdProjLib.projDelete()
+		vars		 = curCtx->stack->get(-2)->vars->dup
+		loc			 = Loc("afAxontExt.runInTestProj")
 		
 		// projName MUST 
 		//  - be at least 4 chars
@@ -40,9 +65,21 @@ internal class AxontRunner {
 		// not sure why the vars aren't returned through ctx.varsInScope() ???
 		proj		:= curCtx.sys.proj.local(projName)
 
-		// dup() is VERY important - it prevents SkySpark from adding more vars to it! :)
-		vars		 = curCtx->stack->get(-2)->vars->dup
+		// add extensions - making sure to add them in the order of depends
+		sortExtsViaDepends(proj, exts).each |def| {
+			proj.extAdd(def)
+		}
 	
+		// copy over recs
+		recGrid := CoreLib.swizzleRefs(curCtx.readAll(recs))
+		recDict := HxCoreFuncs.stripUncommittable(recGrid) as Dict[]
+		recDiff := recDict.map |row| {
+			id := row.get("id")
+			row = Etc.dictRemove(row, "id")
+			return Diff.makeAdd(row, id)
+		}
+		proj.commitAll(recDiff)
+
 		// try to put the proj into a steady state, as per ProjTest.forceSteadyState()
 		try proj->testForceSteadyState
 		catch (Err err) { proj.log.warn("Could not force steady state - ${err.msg}") }
@@ -65,6 +102,28 @@ internal class AxontRunner {
 			throw Err("Unknown func: ${axonObj}")
 
 		return axonCtx.callInNewFrame(axonFn, args ?: Obj#.emptyList, loc, vars)
+	}
+	
+	private static ExtDef[] sortExtsViaDepends(Proj proj, Str[] exts) {
+		
+		// remove those exts that come enabled by default
+		proj.extStatus.each |row| {
+			if (row.has("enabled"))
+				exts.remove(row.get("name"))
+		}
+		
+		defs := (ExtDef[]) exts.map { proj.sys.ext(it) }
+
+		defs.sort |d1, d2| {
+			d1Sym := Symbol("lib:${d1.name}")
+			d2Sym := Symbol("lib:${d2.name}")
+
+			if (d1.depends.contains(d2Sym))	return 1
+			if (d2.depends.contains(d1Sym))	return -1
+			return 0
+		}
+
+		return defs
 	}
 	
 	private static User makeSyntheticUser(Str username, Str role, [Str:Obj]? extraTags := null) {
