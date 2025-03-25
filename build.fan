@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afAxontExt"
 		summary = "Unit test runner and assertion functions for Axon"
-		version = Version("0.1.3")
+		version = Version("0.1.4")
 
 		meta = [
 			"pod.dis"		: "Axont",
@@ -15,14 +15,18 @@ class Build : BuildPod {
 		]
 
 		depends = [
-			"sys        1.0.77 - 1.0",
+			"sys        1.0.77	- 1.0",
 
 			// ---- SkySpark -----------------------
-			"axon       3.1.1  - 3.1",
-			"haystack   3.1.1  - 3.1",
-			"skyarc     3.1.1  - 3.1",
-			"skyarcd    3.1.1  - 3.1",
-			"projMod    3.1.1  - 3.1",
+			"axon       3.1.1	- 3.1",
+			"haystack   3.1.1	- 3.1",
+			"skyarc     3.1.1	- 3.1",
+			"skyarcd    3.1.1	- 3.1",
+			"projMod    3.1.1	- 3.1",
+			
+			// ---- Haxwll -------------------------
+			"hx         3.1.1	- 3.1",
+			"folio      3.1.1	- 3.1",
 		]
 
 		srcDirs = [`fan/`, `test/`]
