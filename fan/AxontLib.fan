@@ -162,8 +162,8 @@ const class AxontLib {
 	**  - 'recs'          - a string filter expr of all records to be copied over to the new proj.
 	** 
 	** When running tests in a new project, unless 'exts' or 'recs' are defined, then all enabled 
-	** exts in current project are also enabled in the new project. And all 'func or def' records
-	** are copied over also.  
+	** exts in current project are also enabled in the new project. And all 'func or def or rule' 
+	** records are copied over also.  
 	@Axon
 	static Grid runTests(Obj tests, Dict? opts := null) {
 		

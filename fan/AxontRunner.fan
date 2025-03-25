@@ -34,9 +34,9 @@ internal class AxontRunner {
 		
 		// default to copying over funcs and defs
 		if (recs == null)
-			recs = "func or def"
+			recs = "func or def or rule"
 	}
-	
+
 	** Runs the given fn in the context of a new SkySpark project.
 	** The fn may call 'callAxonFn()'.
 	Obj? runInNewProj(|AxontRunner->Obj?| fn) {
