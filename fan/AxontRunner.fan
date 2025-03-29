@@ -26,12 +26,20 @@ internal class AxontRunner {
 		this.exts = opts.get("exts")
 		this.recs = opts.get("recs")
 		
+		extsBad := exts?.findAll { it.startsWith("-") }?.map { it[1..-1] }
+		exts	 = exts?.exclude { it.startsWith("-") }
+		
 		// default to enabling all the exts in the current Proj
-		if (exts == null)
+		if (exts == null || exts.isEmpty)
 			exts = Context.cur(true).proj.extStatus
 				.findAll |row| { row.has("enabled") }
 				.colToList("name", Str#)
 		
+		// do not enable an ext starting with '-'!
+		if (extsBad != null)
+			// exts should have a value by now
+			exts.removeAll(extsBad)
+
 		// default to copying over funcs and defs
 		if (recs == null)
 			recs = "func or def or rule"
@@ -71,7 +79,7 @@ internal class AxontRunner {
 			sortExtsViaDepends(proj, exts).each |def| {
 				proj.extAdd(def)
 			}
-		
+			
 			// copy over recs
 			recGrid := CoreLib.swizzleRefs(curCtx.readAll(recs))
 			recDict := HxCoreFuncs.stripUncommittable(recGrid) as Dict[]
@@ -113,7 +121,7 @@ internal class AxontRunner {
 				exts.remove(row.get("name"))
 		}
 		
-		defs := (ExtDef[]) exts.map { proj.sys.ext(it) }
+		defs := (ExtDef[]) exts.map { proj.sys.ext(it, false) }.findNotNull
 
 		defs.sort |d1, d2| {
 			d1Sym := Symbol("lib:${d1.name}")
