@@ -94,20 +94,21 @@ const class AxontLib {
 	**
 	** Example:
 	**   syntax: axon
-	**   verifyErr =>
+	**   verifyErr() () =>
 	**     parseInt("@#!")
 	**
 	@Axon
 	static Str verifyErr(Fn fn) {
 		axonCtx := AxonContext.curAxon(true)
-		try {
-			fn.call(axonCtx, Obj#.emptyList)
+		passErr := null as Err
+
+		try fn.call(axonCtx, Obj#.emptyList)
+		catch (Err err) passErr = err
+
+		if (passErr == null)
 			MyTest().fail("Err not thrown")
-		} catch (Err err) {
-			/* pass */
-			return getErrMsg(err)
-		}
-		throw Err("WTF?")
+
+		return getErrMsg(passErr)
 	}
 	
 	** Verify that the function throws an Err.
@@ -122,15 +123,10 @@ const class AxontLib {
 	**     throw { dis: "poo" }
 	@Axon
 	static Void verifyErrMsg(Str errMsg, Fn fn) {
-		axonCtx := AxonContext.curAxon(true)
-		try {
-			fn.call(axonCtx, Obj#.emptyList)
-			MyTest().fail("Err not thrown")
-		} catch (Err err) {
-			verifyEq(errMsg, getErrMsg(err))
-		}
+		actualMsg := verifyErr(fn)
+		verifyEq(errMsg, actualMsg)
 	}
-	
+
 	** Throw a test failure exception.
 	** 
 	** If 'msg' is non-null, include it in a failure exception.
@@ -138,7 +134,7 @@ const class AxontLib {
 	static Void fail(Obj? msg := null) {
 		MyTest().fail(msg?.toStr)
 	}
-	
+
 	** Returns a list of all top level funcs in the project whose name starts with 'test'.
 	** Use to quickly run all tests in a project.
 	** 
@@ -149,7 +145,7 @@ const class AxontLib {
 	static Fn[] tests() {
 		Context.cur(true).funcs { it.name.startsWith("test") && it.name.getSafe(4).isUpper }.map { it.expr }
 	}
-	
+
 	** Runs the given list of test functions and returns a Grid of results.
 	** 
 	** 'tests' may be a name of a top level function, the function itself, or a list of said types.
