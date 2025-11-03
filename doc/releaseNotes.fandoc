@@ -3,7 +3,7 @@ v0.1 Releases [#v0.1.x]
 Versions compatible with SkySpark v3.1.x.
 
 **v0.1.6** [#v0.1.6]
- - Fix: 'verifyErr()' did not throw an Err when expected.
+ - Fix: 'verifyErr()' did not throw an Err when expected. Thanks to *Milan Matyszewski* for reporting.
 
 **v0.1.4** [#v0.1.4]
  - New: 'runTests()' now takes a 'runInNewProj' marker tag to run every test in the suite in its own project.
