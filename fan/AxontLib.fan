@@ -229,7 +229,9 @@ const class AxontLib {
 			return Etc.makeDict(result)
 		}
 		
-		return Etc.makeDictsGrid(null, results).reorderCols("result name dur msg trace".split)
+		return Etc.makeDictsGrid(null, results)
+			.reorderCols("result name dur msg trace".split)
+			.addColMeta("dur", Etc.makeDict1("format", "0"))	// stoopid JS floating points nonsense!
 	}
 
 	** Convenience for '[...].runTests({runInNewProj})'.
